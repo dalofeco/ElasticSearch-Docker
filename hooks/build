@@ -1,0 +1,1 @@
+docker build --build-arg version=$version --build-arg config_file=$config_file --build-arg gid=$gid --build-arg uid=$uid -f $DOCKERFILE_PATH -t $IMAGE_NAME .
