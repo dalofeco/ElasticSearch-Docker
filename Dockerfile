@@ -5,7 +5,6 @@ ENV DEBIAN_FRONTEND noninteractive
 ARG version
 ARG uid
 ARG gid
-ARG config_file
 
 # Install dependencies and utils
 RUN apt-get update
@@ -31,8 +30,6 @@ RUN groupmod --gid $gid elasticsearch && \
 RUN mkdir backups && mkdir data && \
     chown -R $uid:$gid /usr/share/elasticsearch && \
     chown -R $uid:$gid data backups
-
-COPY --chown=$uid:$gid $config_file /etc/elasticsearch/elasticsearch.yml
 
 USER elasticsearch:elasticsearch
 

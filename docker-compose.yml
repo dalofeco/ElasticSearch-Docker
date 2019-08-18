@@ -1,45 +1,119 @@
-version: '3.1'
+version: '3.7'
 services:
-  elasticsearch_master:
-    image: dalofeco/elasticsearch_master:7.3.0
-    container_name: ElasticSearchMaster
-    build:
-        context: Docker/ElasticSearch
-        dockerfile: Dockerfile
-        args:
-          uid: 1021
-          gid: 1021
-          version: 7.3.0
-          config_file: "master.yml"
+
+  elasticsearch-master-1:
+    image: dalofeco/elasticsearch:7.3.0
+    healthcheck:
+      test: curl -fs http://localhost:9200/_cat/health || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+    configs:
+      - source: es-master-1
+        target: /etc/elasticsearch/elasticsearch.yml
+        uid: 1021
+        gid: 1021
+      - source: jvm-options-master
+        target: /etc/elasticsearch/jvm.options
+        uid: 1021
+        gid: 1021
+    networks:
+      - esnet
+    ports:
+      - target: 9200
+        published: 9200
+        protocol: tcp
+        mode: host
     deploy:
+      endpoint_mode: dnsrr
       mode: replicated
       replicas: 1
+      resources:
+        limits:
+          memory: 1G
       placement: 
         constraints:
           - node.role == manager
     volumes:
-      - esdata:/var/lib/elasticsearch/data
-      - esbackups:/var/lib/elasticsearch/backups
-    networks:
-      - esnet
+      - esdata-m1:/var/lib/elasticsearch/data
+      - esbackups-m1:/var/lib/elasticsearch/backups    
 
-  elasticsearch_slave:
-    image: dalofeco/elasticsearch_slave:7.3.0
-    container_name: ElasticSearchSlave
-    build:
-      context: Docker/ElasticSearch
-      dockerfile: Dockerfile
-      args:
+  elasticsearch-data-1:
+    image: dalofeco/elasticsearch:7.3.0
+    healthcheck:
+      test: curl -fs http://localhost:9200/_cat/health || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+    configs:
+      - source: es-data-1
+        target: /etc/elasticsearch/elasticsearch.yml
         uid: 1021
         gid: 1021
-        version: 7.3.0
-        config_file: "slave.yml"
+      - source: jvm-options-data
+        target: /etc/elasticsearch/jvm.options
+        uid: 1021
+        gid: 1021
     deploy:
+      endpoint_mode: dnsrr
       mode: replicated
       replicas: 1
+      resources:
+        limits:
+          memory: 3G
+      placement:
+        constraints:
+          - node.role == manager
     networks:
       - esnet
+    ports:
+      - target: 9200
+        published: 9200
+        protocol: tcp
+        mode: host
+    volumes:
+      - esdata-d1:/var/lib/elasticsearch/data
+      - esbackups-d1:/var/lib/elasticsearch/backups
 
 networks:
   esnet:
+    driver: overlay
+    attachable: true
+    name: esnet
+  proxy:
+    driver: overlay
+    name: proxy
+    
+volumes:
+  esdata-m1:
+  esdata-d1:
+  esbackups-m1:
+  esbackups-d1:
+  
+configs:
+  es-master-1:
+    name: es-master-1
+    file: configs/es-config-master-1.yml
+    
+  es-data-1:
+    name: es-data-1
+    file: configs/es-config-data-1.yml
+    
+  es-coordination:
+    name: es-coordination
+    file: configs/es-config-coordination.yml
+    
+  jvm-options-master:
+    name: jvm-options-master
+    file: configs/jvm.master.options
+    
+  jvm-options-data:
+    name: jvm-options-data
+    file: configs/jvm.data.options
+    
+  jvm-options-coordination:
+    name: jvm-options-coordination
+    file: configs/jvm.coordination.options
 

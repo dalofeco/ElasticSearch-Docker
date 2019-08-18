@@ -16,12 +16,21 @@
 #
 cluster.name: "elasticsearch-cluster"
 #
+# Disable cross cluster search
+#
+cluster.remote.connect: false
+#
 # ------------------------------------ Node ------------------------------------
 #
 # Use a descriptive name for the node:
 #
-node.name: es-master-node
-node.master: true
+node.name: es-coordination-node
+node.master: false
+node.voting_only: false
+node.data: false
+node.ingest: false
+node.ml: false
+
 #
 # Add custom attributes to the node:
 #
@@ -79,7 +88,7 @@ discovery.seed_hosts: ["127.0.0.1:9300"]
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
-cluster.initial_master_nodes: ["es-master-node"]
+cluster.initial_master_nodes: ["es_master_node_1"]
 #
 # For more information, consult the discovery and cluster formation module documentation.
 #

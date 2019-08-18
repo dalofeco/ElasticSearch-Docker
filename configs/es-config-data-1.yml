@@ -20,8 +20,10 @@ cluster.name: "elasticsearch-cluster"
 #
 # Use a descriptive name for the node:
 #
-node.name: es-slave-node
+node.name: es-data-node
 node.master: false
+node.data: true
+node.ingest: true
 #
 # Add custom attributes to the node:
 #
@@ -74,7 +76,7 @@ http.port: 9200
 #
 # discovery.type: single-node
 #
-discovery.seed_hosts: ["elasticsearch_master:9300"]
+discovery.seed_hosts: ["elasticsearch-master-1:9300"]
 
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
