@@ -1,2 +1,2 @@
 # ElasticSearch-Docker
-Docker images for Elasticsearch
+Docker images for ElasticSearch

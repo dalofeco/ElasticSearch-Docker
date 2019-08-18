@@ -1,0 +1,45 @@
+version: '3.1'
+services:
+  elasticsearch_master:
+    image: dalofeco/elasticsearch_master:7.3.0
+    container_name: ElasticSearchMaster
+    build:
+        context: Docker/ElasticSearch
+        dockerfile: Dockerfile
+        args:
+          uid: 1021
+          gid: 1021
+          version: 7.3.0
+          config_file: "master.yml"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement: 
+        constraints:
+          - node.role == manager
+    volumes:
+      - esdata:/var/lib/elasticsearch/data
+      - esbackups:/var/lib/elasticsearch/backups
+    networks:
+      - esnet
+
+  elasticsearch_slave:
+    image: dalofeco/elasticsearch_slave:7.3.0
+    container_name: ElasticSearchSlave
+    build:
+      context: Docker/ElasticSearch
+      dockerfile: Dockerfile
+      args:
+        uid: 1021
+        gid: 1021
+        version: 7.3.0
+        config_file: "slave.yml"
+    deploy:
+      mode: replicated
+      replicas: 1
+    networks:
+      - esnet
+
+networks:
+  esnet:
+
