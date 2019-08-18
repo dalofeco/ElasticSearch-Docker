@@ -12,12 +12,12 @@ services:
     configs:
       - source: es-master-1
         target: /etc/elasticsearch/elasticsearch.yml
-        uid: 1021
-        gid: 1021
+        uid: '1021'
+        gid: '1021'
       - source: jvm-options-master
         target: /etc/elasticsearch/jvm.options
-        uid: 1021
-        gid: 1021
+        uid: '1021'
+        gid: '1021'
     networks:
       - esnet
     ports:
@@ -36,8 +36,8 @@ services:
         constraints:
           - node.role == manager
     volumes:
-      - esdata-m1:/var/lib/elasticsearch/data
-      - esbackups-m1:/var/lib/elasticsearch/backups    
+      - esdata-m1:/usr/share/elasticsearch/data
+      - esbackups-m1:/usr/share/elasticsearch/backups    
 
   elasticsearch-data-1:
     image: dalofeco/elasticsearch:7.3.0
@@ -50,12 +50,12 @@ services:
     configs:
       - source: es-data-1
         target: /etc/elasticsearch/elasticsearch.yml
-        uid: 1021
-        gid: 1021
+        uid: '1021'
+        gid: '1021'
       - source: jvm-options-data
         target: /etc/elasticsearch/jvm.options
-        uid: 1021
-        gid: 1021
+        uid: '1021'
+        gid: '1021'
     deploy:
       endpoint_mode: dnsrr
       mode: replicated
@@ -63,9 +63,9 @@ services:
       resources:
         limits:
           memory: 3G
-      placement:
-        constraints:
-          - node.role == manager
+#      placement:
+#        constraints:
+#          - node.role == manager
     networks:
       - esnet
     ports:
@@ -74,8 +74,8 @@ services:
         protocol: tcp
         mode: host
     volumes:
-      - esdata-d1:/var/lib/elasticsearch/data
-      - esbackups-d1:/var/lib/elasticsearch/backups
+      - esdata-d1:/usr/share/elasticsearch/data
+      - esbackups-d1:/usr/share/elasticsearch/backups
 
 networks:
   esnet:

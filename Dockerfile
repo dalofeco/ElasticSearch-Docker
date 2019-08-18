@@ -29,7 +29,7 @@ RUN groupmod --gid $gid elasticsearch && \
 
 RUN mkdir backups && mkdir data && \
     chown -R $uid:$gid /usr/share/elasticsearch && \
-    chown -R $uid:$gid data backups
+    chown -R $uid:$gid /usr/share/elasticsearch/data /usr/share/elasticsearch/backups
 
 USER elasticsearch:elasticsearch
 
